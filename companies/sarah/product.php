@@ -1,4 +1,7 @@
-<?php $currentPage = "product"; ?>
+<?php
+$currentPage = "product";
+require __DIR__ . '/products/_catalog.php';
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -10,21 +13,43 @@
   <body>
     <?php require 'navBar.php'; ?>
 
-    <h1>Products & Services</h1>
+    <div class="container mt-5">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+          <h1 class="mb-1">Products & Services</h1>
+          <p class="text-muted mb-0">Explore 10 offerings. Visits are tracked using cookies.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-primary" href="products/recent.php">Last 5 visited</a>
+          <a class="btn btn-outline-primary" href="products/popular.php">Top 5 most visited</a>
+        </div>
+      </div>
 
-    <h2>Anime Convention Catering</h2>
-    <p>Noirium provides scalable catering services tailored for high-traffic pop culture events, including themed bento meals, dessert stations, beverage bars, and branded menu design.</p>
+      <hr class="my-4">
 
-    <h2>Themed Culinary Collections</h2>
-    <p>Our rotating collections are inspired by anime genres and cinematic aesthetics.</p>
-
-    <ul>
-        <li>Cyber Noir Series – Black sesame mousse, charcoal macarons, neon citrus mocktails</li>
-        <li>Fantasy Arc Collection – Sakura rolls, yuzu pastries, dark chocolate truffles</li>
-    </ul>
-
-    <h2>Private Immersive Events</h2>
-    <p>We offer custom catering for cosplay gatherings, themed celebrations, corporate events, and private anime watch parties.</p>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <?php foreach ($PRODUCT_CATALOG as $p): ?>
+          <div class="col">
+            <div class="card h-100">
+              <img
+                src="<?php echo htmlspecialchars((string)$p['image'], ENT_QUOTES, 'UTF-8'); ?>"
+                class="card-img-top"
+                alt="<?php echo htmlspecialchars((string)$p['name'], ENT_QUOTES, 'UTF-8'); ?>"
+                style="height: 180px; object-fit: cover;"
+              >
+              <div class="card-body d-flex flex-column">
+                <h2 class="h5 card-title"><?php echo htmlspecialchars((string)$p['name'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                <div class="mt-auto">
+                  <a class="btn btn-primary w-100" href="<?php echo 'products/' . htmlspecialchars((string)$p['href'], ENT_QUOTES, 'UTF-8'); ?>">
+                    View details
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-..."
