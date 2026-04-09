@@ -1,0 +1,7 @@
+# Dummy users for this company — one CSV line per user (id,name,email,company)
+# Teammates: copy api/users.php + all_users.php, edit only this file (names/emails/company).
+# Lines starting with # are ignored.
+
+1,Sarah Mai,sarah@noirium.example.com,Noirium
+2,Alex Chen,alex@noirium.example.com,Noirium
+3,Jordan Park,jordan@noirium.example.com,Noirium

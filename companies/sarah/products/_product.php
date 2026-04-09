@@ -41,9 +41,9 @@ $products = [
   ],
   'kiki-bento' => [
     'name' => 'Kiki Bento Box',
-    'tagline' => 'Menu cards and naming that match your event’s universe.',
-    'image' => '/companies/sarah/products/images/kiki-bento/kiki.jpg',
-    'description' => "A creative service for naming dishes, building a cohesive menu narrative, and producing print-ready menu cards.\n\nBest paired with our catering packages.",
+    'tagline' => 'Every want to be part of the studio Ghibli club!',
+    'image' => '/products/images/kiki-bento/kiki.jpg',
+    'description' => "A creative bento to look like Kiki's best friend GiGi the cat!\n\nJoin in the Ghibi Magic",
   ],
   'vip-tasting-flight' => [
     'name' => 'VIP Tasting Flight',

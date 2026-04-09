@@ -36,7 +36,7 @@ $PRODUCT_CATALOG = [
     'id' => 'kiki-bento-design',
     'name' => 'Kiki Bento Box',
     'href' => 'kiki-bento.php',
-    'image' => '/companies/sarah/products/images/kiki-bento/kiki.jpg',
+    'image' => '/products/images/kiki-bento/kiki.jpg',
   ],
   [
     'id' => 'vip-tasting-flight',
