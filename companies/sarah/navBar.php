@@ -3,9 +3,12 @@ if (!isset($currentPage)) { $currentPage = ""; }
 $basePath = isset($basePath) ? (string)$basePath : "";
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg cc-navbar">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>index.php">Noirium</a>
+    <a class="navbar-brand cc-brand" href="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>index.php">
+      <span class="cc-logo" aria-hidden="true">N</span>
+      <span>Noirium</span>
+    </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>

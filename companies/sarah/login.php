@@ -47,11 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Noirium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/styles.css">
   </head>
   <body>
     <?php require 'navBar.php'; ?>
 
-    <div class="container mt-5" style="max-width: 520px;">
+    <div class="container cc-container mt-5" style="max-width: 560px;">
+      <div class="cc-paper p-4 p-md-5">
       <h1 class="mb-3">Administrator Login</h1>
       <p class="text-muted mb-4">Secure pages require an administrator login.</p>
 
@@ -96,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         After login you’ll be redirected to
         <code><?php echo htmlspecialchars($redirect, ENT_QUOTES, 'UTF-8'); ?></code>.
       </p>
+      </div>
     </div>
     
 

@@ -9,11 +9,13 @@ require __DIR__ . '/products/_catalog.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Products & Services - Noirium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/styles.css">
   </head>
   <body>
     <?php require 'navBar.php'; ?>
 
-    <div class="container mt-5">
+    <div class="container cc-container mt-5">
+      <div class="cc-paper p-4 p-md-5">
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h1 class="mb-1">Products & Services</h1>
@@ -25,7 +27,7 @@ require __DIR__ . '/products/_catalog.php';
         </div>
       </div>
 
-      <hr class="my-4">
+      <hr class="cc-divider">
 
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <?php foreach ($PRODUCT_CATALOG as $p): ?>
@@ -48,6 +50,7 @@ require __DIR__ . '/products/_catalog.php';
             </div>
           </div>
         <?php endforeach; ?>
+      </div>
       </div>
     </div>
 

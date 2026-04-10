@@ -18,11 +18,13 @@ $recent = array_values(array_filter($recent, fn($id) => is_string($id) && isset(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Last 5 Visited Products - Noirium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/styles.css">
   </head>
   <body>
     <?php $basePath = '../'; require __DIR__ . '/../navBar.php'; ?>
 
-    <div class="container mt-5">
+    <div class="container cc-container mt-5">
+      <div class="cc-paper p-4 p-md-5">
       <div class="mb-3">
         <a href="../product.php" class="btn btn-outline-secondary btn-sm">&larr; Back to Products</a>
       </div>
@@ -45,6 +47,7 @@ $recent = array_values(array_filter($recent, fn($id) => is_string($id) && isset(
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

@@ -198,6 +198,7 @@ usort($combinedUsers, function ($a, $b) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Combined users (all companies)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/styles.css">
     <style>
         .err { background: #fff3f3; border: 1px solid #e8a0a0; }
     </style>

@@ -6,21 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>About - Noirium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/styles.css">
   </head>
   <body>
     <?php require 'navBar.php'; ?>
 
-    <h1>About Noirium:</h1>
+    <div class="container cc-container mt-5">
+      <div class="cc-paper p-4 p-md-5">
+        <h1>About Noirium</h1>
+        <p class="text-muted">A cozy cafe-studio for anime-inspired catering, desserts, and whimsical events.</p>
 
-    <p>Noirium is a contemporary culinary studio specializing in anime-inspired dining experiences and themed event catering. Founded in 2026, Noirium was created to serve the growing global market of anime conventions, pop culture festivals, and immersive entertainment events.</p>
+        <hr class="cc-divider">
 
-    <p>Drawing inspiration from Japanese animation, cyberpunk aesthetics, and cinematic storytelling, Noirium designs cohesive culinary collections that transform food into immersive narrative experiences.</p>
+        <p>Noirium is a contemporary culinary studio specializing in anime-inspired dining experiences and themed event catering. Founded in 2026, Noirium was created to serve the growing global market of anime conventions, pop culture festivals, and immersive entertainment events.</p>
 
-    <h2>Mission</h2>
-    <p>To redefine anime-themed dining through elevated culinary craftsmanship and immersive storytelling design.</p>
+        <p>Drawing inspiration from Japanese animation, cyberpunk aesthetics, and cinematic storytelling, Noirium designs cohesive culinary collections that transform food into immersive narrative experiences.</p>
 
-    <h2>Vision</h2>
-    <p>To become a leading anime-focused catering and culinary brand within major convention and entertainment markets.</p>
+        <h2 class="mt-4">Mission</h2>
+        <p>To redefine anime-themed dining through elevated culinary craftsmanship and immersive storytelling design.</p>
+
+        <h2 class="mt-4">Vision</h2>
+        <p>To become a leading anime-focused catering and culinary brand within major convention and entertainment markets.</p>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-..."

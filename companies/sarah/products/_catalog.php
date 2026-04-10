@@ -1,6 +1,10 @@
 <?php
 // Shared catalog data for listing pages.
 
+$kikiImagePath = file_exists(__DIR__ . '/images/kiki-bento/kiki.jpg')
+  ? '/products/images/kiki-bento/kiki.jpg'
+  : '/products/images/kiki-bento/hero.svg';
+
 $PRODUCT_CATALOG = [
   [
     'id' => 'cyber-noir-bento',
@@ -33,10 +37,10 @@ $PRODUCT_CATALOG = [
     'image' => '/products/images/cosplay-greenroom-snacks/hero.svg',
   ],
   [
-    'id' => 'kiki-bento-design',
+    'id' => 'kiki-bento',
     'name' => 'Kiki Bento Box',
     'href' => 'kiki-bento.php',
-    'image' => '/products/images/kiki-bento/kiki.jpg',
+    'image' => $kikiImagePath,
   ],
   [
     'id' => 'vip-tasting-flight',

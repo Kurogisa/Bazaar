@@ -1,0 +1,162 @@
+/* Cottagecore / whimsical cafe theme (no functional changes) */
+
+:root{
+  --cc-bg: #fbf7f0;
+  --cc-surface: rgba(255,255,255,.78);
+  --cc-ink: #2f2a24;
+  --cc-muted: #6f645a;
+  --cc-border: rgba(47,42,36,.12);
+  --cc-accent: #b85c5c;      /* rose */
+  --cc-accent-2: #4f7a5b;    /* sage */
+  --cc-gold: #c6a15b;        /* honey */
+  --cc-shadow: 0 10px 30px rgba(47,42,36,.12);
+}
+
+html, body{
+  min-height: 100%;
+  color: var(--cc-ink);
+}
+
+body{
+  /* Keep background continuous; avoid any tiling/repeating */
+  min-height: 100vh;
+  background-color: var(--cc-bg);
+  background-image:
+    radial-gradient(1200px 500px at 15% 0%, #fff2d8 0%, transparent 55%),
+    radial-gradient(900px 520px at 100% 15%, #e8f3e7 0%, transparent 60%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top left, top right;
+
+  font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+  overflow-x: hidden;
+}
+
+/* On desktop, pin the background to the viewport for a steadier feel while scrolling */
+@media (min-width: 992px){
+  body{ background-attachment: fixed; }
+}
+
+/* Hide default horizontal rules to keep background continuous */
+hr{
+  border: 0;
+  height: 0;
+}
+
+/* Subtle paper texture using gradients (no images required) */
+.cc-paper{
+  background:
+    linear-gradient(0deg, rgba(255,255,255,.82), rgba(255,255,255,.82)),
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.7), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(255,255,255,.55), transparent 60%);
+  /* Softer look: remove hard separation lines */
+  border: 0;
+  box-shadow: 0 12px 30px rgba(47,42,36,.08);
+  border-radius: 18px;
+}
+
+h1,h2,h3,h4,h5{
+  letter-spacing: .2px;
+}
+
+.text-muted{
+  color: var(--cc-muted) !important;
+}
+
+/* Navbar */
+.navbar.cc-navbar{
+  background: rgba(255,255,255,.72) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 0;
+}
+.navbar.cc-navbar .navbar-brand{
+  color: var(--cc-ink) !important;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+/* Logo placeholder next to title */
+.cc-brand{
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+.cc-logo{
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--cc-ink);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.6)),
+              linear-gradient(135deg, rgba(184,92,92,.35), rgba(79,122,91,.25));
+  box-shadow: 0 6px 14px rgba(47,42,36,.10);
+}
+.navbar.cc-navbar .nav-link{
+  color: rgba(47,42,36,.82) !important;
+  border-radius: 999px;
+  padding: .45rem .75rem;
+}
+.navbar.cc-navbar .nav-link:hover{
+  background: rgba(184,92,92,.10);
+}
+.navbar.cc-navbar .nav-link.active{
+  background: rgba(79,122,91,.14);
+  color: var(--cc-ink) !important;
+}
+
+/* Buttons */
+.btn-primary{
+  background: linear-gradient(135deg, var(--cc-accent), #d47d7d);
+  border: none;
+}
+.btn-primary:hover{ filter: brightness(.97); }
+.btn-outline-primary{
+  border-color: rgba(184,92,92,.6);
+  color: var(--cc-accent);
+}
+.btn-outline-primary:hover{
+  background: rgba(184,92,92,.12);
+  border-color: rgba(184,92,92,.75);
+  color: var(--cc-accent);
+}
+.btn-outline-secondary{
+  border-color: rgba(47,42,36,.25);
+  color: rgba(47,42,36,.82);
+}
+
+/* Cards / tables */
+.card{
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(47,42,36,.08);
+}
+.card-img-top{
+  filter: saturate(1.05) contrast(1.02);
+}
+.table{
+  background: rgba(255,255,255,.75);
+}
+.table thead th{
+  background: rgba(232,243,231,.75);
+}
+
+/* Page containers */
+.container.cc-container{
+  max-width: 1050px;
+}
+
+/* Gentle responsive spacing without changing layout drastically */
+.cc-paper{
+  margin-inline: auto;
+}
+
+/* Little decorative divider */
+.cc-divider{
+  display: none; /* keep markup, remove visible separator */
+}
+

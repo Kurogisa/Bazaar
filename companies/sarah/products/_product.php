@@ -42,7 +42,9 @@ $products = [
   'kiki-bento' => [
     'name' => 'Kiki Bento Box',
     'tagline' => 'Every want to be part of the studio Ghibli club!',
-    'image' => '/products/images/kiki-bento/kiki.jpg',
+    'image' => file_exists(__DIR__ . '/images/kiki-bento/kiki.jpg')
+      ? '/products/images/kiki-bento/kiki.jpg'
+      : '/products/images/kiki-bento/hero.svg',
     'description' => "A creative bento to look like Kiki's best friend GiGi the cat!\n\nJoin in the Ghibi Magic",
   ],
   'vip-tasting-flight' => [
@@ -124,11 +126,13 @@ $basePath = '../';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?> - Noirium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/styles.css">
   </head>
   <body>
     <?php require __DIR__ . '/../navBar.php'; ?>
 
-    <div class="container mt-5">
+    <div class="container cc-container mt-5">
+      <div class="cc-paper p-4 p-md-5">
       <div class="mb-3">
         <a href="../product.php" class="btn btn-outline-secondary btn-sm">&larr; Back to Products</a>
       </div>
@@ -154,6 +158,7 @@ $basePath = '../';
       <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-primary" href="recent.php">Last 5 visited products</a>
         <a class="btn btn-outline-primary" href="popular.php">Top 5 most visited products</a>
+      </div>
       </div>
     </div>
 
