@@ -18,7 +18,8 @@ $myApiUrl = 'https://noirium.net/api/users.php';
 
 // Teammate APIs (URLs from your group members)
 $teammateApis = [
-    ['url' => 'https://parthgala.infinityfreeapp.com/api/users.php', 'label' => 'Parth (parthgala)'],
+    // InfinityFree sometimes uses .infinityfree.me vs .infinityfreeapp.com — use the one that matches their panel
+    ['url' => 'https://parthgala.infinityfree.me/api/users.php', 'label' => 'Parth (parthgala)'],
     ['url' => 'https://aliciayerinkim.com/api/users.php', 'label' => 'Alicia (aliciayerinkim.com)'],
 ];
 
@@ -39,6 +40,254 @@ $curlInsecureSsl = true;
 // ---------------------------------------------------------------------------
 
 /**
+ * Free hosts often print warnings/HTML before JSON. Strip BOM/whitespace and pull the first {...} block.
+ */
+function sanitizeJsonResponseBody(string $body): string
+{
+    $body = (string) $body;
+    if (strncmp($body, "\xEF\xBB\xBF", 3) === 0) {
+        $body = substr($body, 3);
+    }
+    return trim($body);
+}
+
+/**
+ * InfinityFree (and similar) may return an HTML+JS "browser check" page to non-browser clients.
+ * PHP CURL cannot execute JavaScript, so the real JSON never loads.
+ */
+function looksLikeBrowserOnlySecurityPage(string $raw): bool
+{
+    $r = strtolower($raw);
+    if (strpos($r, '/aes.js') !== false || strpos($r, 'aes.js') !== false) {
+        return true;
+    }
+    if (strpos($r, 'tonumbers') !== false && strpos($r, 'parseint') !== false && strpos($r, '<script') !== false) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Extract first top-level JSON object substring (handles noise before/after JSON).
+ */
+function extractFirstJsonObject(string $body): ?string
+{
+    $start = strpos($body, '{');
+    if ($start === false) {
+        return null;
+    }
+    return extractJsonObjectStartingAt($body, $start);
+}
+
+/**
+ * Some endpoints return a raw JSON array. Same “noise before JSON” issue as objects.
+ */
+function extractFirstJsonArray(string $body): ?string
+{
+    $start = strpos($body, '[');
+    if ($start === false) {
+        return null;
+    }
+    return extractJsonArrayStartingAt($body, $start);
+}
+
+/**
+ * Balanced {...} starting exactly at $start (must point at '{').
+ * Note: naive brace counting; fine for typical lab JSON without { } inside strings.
+ */
+function extractJsonObjectStartingAt(string $body, int $start): ?string
+{
+    $len = strlen($body);
+    if ($start < 0 || $start >= $len || $body[$start] !== '{') {
+        return null;
+    }
+    $depth = 0;
+    for ($i = $start; $i < $len; $i++) {
+        $ch = $body[$i];
+        if ($ch === '{') {
+            $depth++;
+        } elseif ($ch === '}') {
+            $depth--;
+            if ($depth === 0) {
+                return substr($body, $start, $i - $start + 1);
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Balanced [...] starting exactly at $start (must point at '[').
+ */
+function extractJsonArrayStartingAt(string $body, int $start): ?string
+{
+    $len = strlen($body);
+    if ($start < 0 || $start >= $len || $body[$start] !== '[') {
+        return null;
+    }
+    $depth = 0;
+    for ($i = $start; $i < $len; $i++) {
+        $ch = $body[$i];
+        if ($ch === '[') {
+            $depth++;
+        } elseif ($ch === ']') {
+            $depth--;
+            if ($depth === 0) {
+                return substr($body, $start, $i - $start + 1);
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * HTML/wrapper pages often contain an early "{}" or tiny JSON before the real payload.
+ * Scan for every { and [ in the first N bytes and decode each candidate.
+ *
+ * @return array<int, array<string, mixed>>|null
+ */
+function bruteForceExtractUsersList(string $raw): ?array
+{
+    $best = null;
+    $bestCount = -1;
+    $scanLen = min(strlen($raw), 24000);
+
+    for ($i = 0; $i < $scanLen; $i++) {
+        $ch = $raw[$i];
+        if ($ch === '{') {
+            $slice = extractJsonObjectStartingAt($raw, $i);
+            if ($slice === null || strlen($slice) < 3) {
+                continue;
+            }
+            $d = json_decode($slice, true);
+            if (!is_array($d)) {
+                continue;
+            }
+            $list = extractUsersListFromDecoded($d);
+            if ($list === null) {
+                continue;
+            }
+            $c = count($list);
+            if ($c > $bestCount) {
+                $bestCount = $c;
+                $best = $list;
+            }
+        } elseif ($ch === '[') {
+            $slice = extractJsonArrayStartingAt($raw, $i);
+            if ($slice === null || strlen($slice) < 2) {
+                continue;
+            }
+            $d = json_decode($slice, true);
+            if (!is_array($d) || !isZeroIndexedList($d) || $d === []) {
+                continue;
+            }
+            $first = $d[0] ?? null;
+            if (!is_array($first) || !rowLooksLikeUser($first)) {
+                continue;
+            }
+            $c = count($d);
+            if ($c > $bestCount) {
+                $bestCount = $c;
+                $best = $d;
+            }
+        }
+    }
+
+    return $bestCount >= 0 ? $best : null;
+}
+
+/**
+ * True if $arr is a list (0..n-1 keys) of associative rows.
+ */
+function isZeroIndexedList(array $arr): bool
+{
+    if ($arr === []) {
+        return true;
+    }
+    $keys = array_keys($arr);
+    $n = count($keys);
+    for ($i = 0; $i < $n; $i++) {
+        if ((string) $keys[$i] !== (string) $i) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Does this row look like a user record? (teammates may use slightly different keys)
+ */
+function rowLooksLikeUser(array $row): bool
+{
+    $keys = array_map('strtolower', array_keys($row));
+    $has = function ($k) use ($keys) {
+        return in_array(strtolower($k), $keys, true);
+    };
+    return $has('name') || $has('email') || $has('username') || $has('user_name')
+        || $has('fullname') || $has('full_name') || $has('firstname')
+        || $has('id') || $has('user_id');
+}
+
+/**
+ * Pick the first array value that looks like a list of user objects.
+ */
+function extractUsersListFromDecoded(array $decoded): ?array
+{
+    // 1) Exact keys we expect (and common lab variants)
+    $preferredKeys = ['users', 'data', 'items', 'results', 'list', 'records', 'user', 'people', 'members'];
+    foreach ($preferredKeys as $key) {
+        if (!isset($decoded[$key]) || !is_array($decoded[$key])) {
+            continue;
+        }
+        $candidate = $decoded[$key];
+        if ($candidate === []) {
+            return [];
+        }
+        if (isZeroIndexedList($candidate)) {
+            $first = $candidate[0] ?? null;
+            if (is_array($first) && rowLooksLikeUser($first)) {
+                return $candidate;
+            }
+        } else {
+            // Object map: { "users": { "1": {...}, "2": {...} } }
+            $values = array_values($candidate);
+            if ($values !== [] && is_array($values[0]) && rowLooksLikeUser($values[0])) {
+                return $values;
+            }
+        }
+    }
+
+    // 2) Nested shapes: { "data": { "users": [ ... ] } }
+    if (isset($decoded['data']) && is_array($decoded['data']) && !isZeroIndexedList($decoded['data'])) {
+        $inner = extractUsersListFromDecoded($decoded['data']);
+        if ($inner !== null) {
+            return $inner;
+        }
+    }
+
+    // 3) Root is already a JSON array of users
+    if (isZeroIndexedList($decoded)) {
+        $first = $decoded[0] ?? null;
+        if (is_array($first) && rowLooksLikeUser($first)) {
+            return $decoded;
+        }
+    }
+
+    // 4) Last resort: first numeric-list child that looks like users
+    foreach ($decoded as $v) {
+        if (!is_array($v) || !isZeroIndexedList($v) || $v === []) {
+            continue;
+        }
+        $first = $v[0] ?? null;
+        if (is_array($first) && rowLooksLikeUser($first)) {
+            return $v;
+        }
+    }
+
+    return null;
+}
+
+/**
  * @return array{ ok: bool, users: array, error: string }
  */
 function fetchUsersJsonWithCurl(string $url, int $timeoutSeconds, bool $insecureSsl = false): array
@@ -49,6 +298,14 @@ function fetchUsersJsonWithCurl(string $url, int $timeoutSeconds, bool $insecure
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => $timeoutSeconds,
         CURLOPT_FOLLOWLOCATION => true,
+        // Many hosts gzip JSON; without this, $body can be binary and json_decode fails (browser auto-decompresses).
+        CURLOPT_ENCODING => '',
+        // Some free hosts block or alter requests with no User-Agent; mimic a normal browser fetch.
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        CURLOPT_HTTPHEADER => [
+            'Accept: application/json, text/plain, */*',
+            'Accept-Language: en-US,en;q=0.9',
+        ],
     ];
     if ($insecureSsl) {
         $opts[CURLOPT_SSL_VERIFYPEER] = false;
@@ -69,18 +326,61 @@ function fetchUsersJsonWithCurl(string $url, int $timeoutSeconds, bool $insecure
         return ['ok' => false, 'users' => [], 'error' => "HTTP {$httpCode}"];
     }
 
-    $decoded = json_decode((string) $body, true);
-    if (!is_array($decoded)) {
-        return ['ok' => false, 'users' => [], 'error' => 'Invalid JSON'];
+    $raw = sanitizeJsonResponseBody((string) $body);
+
+    if (looksLikeBrowserOnlySecurityPage($raw)) {
+        return [
+            'ok' => false,
+            'users' => [],
+            'error' => 'Remote host returned a browser-only security page (not JSON). '
+                . 'InfinityFree often blocks server-to-server CURL with a JavaScript challenge (aes.js). '
+                . 'Your browser can pass it; PHP CURL cannot. '
+                . 'Fix: teammate should expose the API on a host/path that allows direct CURL, '
+                . 'or use a static JSON URL (GitHub raw, etc.) for the lab demo.',
+        ];
     }
 
-    $list = [];
-    if (isset($decoded['users']) && is_array($decoded['users'])) {
-        $list = $decoded['users'];
-    } elseif (is_array($decoded) && array_keys($decoded) === range(0, count($decoded) - 1)) {
-        $list = $decoded;
-    } else {
-        return ['ok' => false, 'users' => [], 'error' => 'JSON missing users array'];
+    $decoded = json_decode($raw, true);
+    if (!is_array($decoded)) {
+        $slice = extractFirstJsonObject($raw);
+        if ($slice !== null) {
+            $decoded = json_decode($slice, true);
+        }
+    }
+    if (!is_array($decoded)) {
+        $slice = extractFirstJsonArray($raw);
+        if ($slice !== null) {
+            $decoded = json_decode($slice, true);
+        }
+    }
+    if (!is_array($decoded)) {
+        $snippet = preg_replace('/\s+/', ' ', substr($raw, 0, 180));
+        $jsonErr = function_exists('json_last_error_msg') ? json_last_error_msg() : 'json error';
+        return [
+            'ok' => false,
+            'users' => [],
+            'error' => "Invalid JSON ({$jsonErr}). Start of response: " . $snippet,
+        ];
+    }
+
+    $list = extractUsersListFromDecoded($decoded);
+    // Wrapper HTML may include an early "{}"; first decode can be empty while real JSON is later.
+    if ($list === null) {
+        $list = bruteForceExtractUsersList($raw);
+    }
+
+    if ($list === null) {
+        $topKeys = array_keys($decoded);
+        $keysStr = implode(', ', array_map('strval', $topKeys));
+        $preview = preg_replace('/\s+/', ' ', substr($raw, 0, 220));
+        return [
+            'ok' => false,
+            'users' => [],
+            'error' => 'Could not find a users list in JSON. Top-level keys: '
+                . ($keysStr !== '' ? $keysStr : '(none)')
+                . '. Response preview: '
+                . $preview,
+        ];
     }
 
     $clean = [];
@@ -88,11 +388,18 @@ function fetchUsersJsonWithCurl(string $url, int $timeoutSeconds, bool $insecure
         if (!is_array($row)) {
             continue;
         }
+        $name = $row['name'] ?? $row['user_name'] ?? $row['username'] ?? $row['full_name'] ?? $row['fullName'] ?? $row['FullName'] ?? '';
+        if ($name === '' && isset($row['firstName'], $row['lastName'])) {
+            $name = trim((string) $row['firstName'] . ' ' . (string) $row['lastName']);
+        }
+        $email = $row['email'] ?? $row['mail'] ?? $row['user_email'] ?? $row['userEmail'] ?? '';
+        $company = $row['company'] ?? $row['org'] ?? $row['organization'] ?? '';
+        $id = $row['id'] ?? $row['user_id'] ?? null;
         $clean[] = [
-            'id' => $row['id'] ?? null,
-            'name' => (string) ($row['name'] ?? ''),
-            'email' => (string) ($row['email'] ?? ''),
-            'company' => (string) ($row['company'] ?? ''),
+            'id' => $id,
+            'name' => (string) $name,
+            'email' => (string) $email,
+            'company' => (string) $company,
         ];
     }
 

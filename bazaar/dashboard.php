@@ -57,17 +57,18 @@ foreach ($companies as $co) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#212529">
     <title>Dashboard | Bazaar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="bazaar-dashboard">
 
 <!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary border-opacity-25">
+    <div class="container px-3 px-sm-4">
         <a class="navbar-brand" href="index.php">Bazaar<span class="dot">.</span></a>
         <button class="navbar-toggler" type="button"
                 data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -83,16 +84,16 @@ foreach ($companies as $co) {
 </nav>
 
 <!-- ===== PAGE HERO ===== -->
-<section style="background:linear-gradient(135deg,#0a0f1e,#1a1f3c);padding:60px 0;color:white;">
-    <div class="container text-center">
-        <h1 class="mb-2" style="font-weight:900">Aggregated Dashboard</h1>
-        <p style="color:#94a3b8">User data fetched live from all companies via cURL.</p>
+<section class="dash-hero text-white">
+    <div class="container px-3 px-sm-4 py-4 py-md-5 text-center">
+        <h1 class="mb-2 dash-hero-title">Aggregated Dashboard</h1>
+        <p class="dash-hero-lead mb-0 mx-auto" style="max-width:36rem;color:#94a3b8">User data fetched live from all companies via cURL.</p>
     </div>
 </section>
 
 <!-- ===== SUMMARY STATS ===== -->
-<div style="background:white;border-bottom:1px solid #e2e8f0;" class="py-4">
-    <div class="container">
+<div class="dash-stats-bar border-bottom py-3 py-md-4">
+    <div class="container px-3 px-sm-4">
         <div class="row text-center g-3">
             <div class="col-6 col-md-3">
                 <div class="stat-number text-primary"><?= $totalUsers ?></div>
@@ -111,8 +112,8 @@ foreach ($companies as $co) {
 </div>
 
 <!-- ===== USER TABLES ===== -->
-<section class="section">
-    <div class="container">
+<section class="section dash-section">
+    <div class="container px-3 px-sm-4">
 
         <?php foreach ($results as $r):
             $co = $r['company']; ?>
@@ -120,36 +121,36 @@ foreach ($companies as $co) {
         <div class="mb-5">
             <!-- Company heading -->
             <div class="company-group-header">
-                <div style="width:40px;height:40px;border-radius:10px;background:<?= $co['bg_color'] ?>;color:<?= $co['color'] ?>;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">
+                <div class="company-group-icon" style="background:<?= $co['bg_color'] ?>;color:<?= $co['color'] ?>">
                     <i class="bi <?= $co['icon'] ?>"></i>
                 </div>
-                <div>
-                    <strong><?= htmlspecialchars($co['name']) ?></strong>
-                    <span class="text-muted small ms-2">
+                <div class="company-group-meta min-w-0">
+                    <strong class="d-block"><?= htmlspecialchars($co['name']) ?></strong>
+                    <span class="text-muted small d-block mt-1">
                         <i class="bi bi-cloud-arrow-down-fill me-1"></i>cURL from
-                        <a href="<?= htmlspecialchars($co['api_url']) ?>" target="_blank" class="text-muted">
-                            <?= htmlspecialchars(parse_url($co['api_url'], PHP_URL_HOST)) ?>
+                        <a href="<?= htmlspecialchars($co['api_url']) ?>" target="_blank" rel="noopener noreferrer" class="text-muted text-break">
+                            <?= htmlspecialchars(parse_url($co['api_url'], PHP_URL_HOST) ?: $co['api_url']) ?>
                         </a>
                     </span>
                 </div>
                 <?php if ($r['error']): ?>
-                <span class="badge text-bg-danger ms-auto">
+                <span class="badge text-bg-danger company-group-badge text-wrap text-start">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i><?= htmlspecialchars($r['error']) ?>
                 </span>
                 <?php else: ?>
-                <span class="badge ms-auto" style="background:<?= $co['color'] ?>">
+                <span class="badge company-group-badge align-self-center" style="background:<?= $co['color'] ?>">
                     <?= count($r['users']) ?> users
                 </span>
                 <?php endif; ?>
             </div>
 
             <?php if (!empty($r['users'])): ?>
-            <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;border-top:3px solid <?= $co['color'] ?> !important;">
+            <div class="card border-0 shadow-sm dash-user-card" style="border-radius:12px;overflow:hidden;border-top:3px solid <?= $co['color'] ?> !important;">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 dash-user-table">
                         <thead style="background:#f8fafc;font-size:.8rem;text-transform:uppercase;color:#64748b;letter-spacing:.5px">
                             <tr>
-                                <th class="ps-4 py-3">Name</th>
+                                <th class="ps-3 ps-md-4 py-3">Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
@@ -159,8 +160,8 @@ foreach ($companies as $co) {
                         <tbody>
                             <?php foreach ($r['users'] as $u): ?>
                             <tr>
-                                <td class="ps-4 fw-semibold"><?= htmlspecialchars($u['name']       ?? '—') ?></td>
-                                <td class="text-muted small"><?= htmlspecialchars($u['email']      ?? '—') ?></td>
+                                <td class="ps-3 ps-md-4 fw-semibold text-break"><?= htmlspecialchars($u['name']       ?? '—') ?></td>
+                                <td class="text-muted small text-break"><?= htmlspecialchars($u['email']      ?? '—') ?></td>
                                 <td>
                                     <?php if (!empty($u['role'])): ?>
                                     <span class="badge fw-normal" style="background:<?= $co['bg_color'] ?>;color:<?= $co['color'] ?>">
@@ -174,7 +175,7 @@ foreach ($companies as $co) {
                                     <?= htmlspecialchars($u['status']) ?>
                                     <?php else: ?><span class="text-muted small">—</span><?php endif; ?>
                                 </td>
-                                <td class="text-muted small"><?= htmlspecialchars($u['last_login'] ?? '—') ?></td>
+                                <td class="text-muted small text-nowrap"><?= htmlspecialchars($u['last_login'] ?? '—') ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -183,10 +184,12 @@ foreach ($companies as $co) {
             </div>
 
             <?php elseif ($r['error']): ?>
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-0">
-                <i class="bi bi-wifi-off fs-5"></i>
-                Could not reach <strong class="ms-1"><?= htmlspecialchars($co['name']) ?></strong>.
-                Endpoint: <code class="ms-1"><?= htmlspecialchars($co['api_url']) ?></code>
+            <div class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-0">
+                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                    <i class="bi bi-wifi-off fs-5"></i>
+                    <span>Could not reach <strong><?= htmlspecialchars($co['name']) ?></strong>.</span>
+                </div>
+                <div class="small"><span class="text-danger-emphasis">Endpoint:</span> <code class="d-inline-block text-break"><?= htmlspecialchars($co['api_url']) ?></code></div>
             </div>
 
             <?php else: ?>
@@ -198,8 +201,8 @@ foreach ($companies as $co) {
     </div>
 </section>
 
-<footer>
-    <div class="container">
+<footer class="dash-footer">
+    <div class="container px-3 px-sm-4">
         <a href="index.php"><i class="bi bi-arrow-left me-1"></i>Back to Companies</a>
         <p class="mb-0 mt-2">&copy; <?= date('Y') ?> Bazaar</p>
     </div>

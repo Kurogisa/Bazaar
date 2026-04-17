@@ -5,6 +5,8 @@ $kikiImagePath = file_exists(__DIR__ . '/images/kiki-bento/kiki.jpg')
   ? '/products/images/kiki-bento/kiki.jpg'
   : '/products/images/kiki-bento/hero.svg';
 
+
+
 $PRODUCT_CATALOG = [
   [
     'id' => 'cyber-noir-bento',
