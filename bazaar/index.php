@@ -14,7 +14,8 @@ $count = count($companies);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8f9fa">
     <title>Bazaar — Student Marketplace Hub</title>
 
     <!-- All external links are absolute URLs — work on any server -->
@@ -41,12 +42,29 @@ $count = count($companies);
 
 *, *::before, *::after { box-sizing: border-box; }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+html {
+    overflow-x: clip;
+}
+
 body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--surface);
     color: var(--on-surface);
     margin: 0;
-    padding-top: 72px;
+    padding-top: calc(72px + env(safe-area-inset-top, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -57,15 +75,62 @@ body {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    height: 72px;
+    box-sizing: border-box;
+    min-height: calc(72px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-right: max(2.5rem, env(safe-area-inset-right, 0px));
+    padding-bottom: 0;
+    padding-left: max(2.5rem, env(safe-area-inset-left, 0px));
     background: rgba(248,249,250,0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(171,179,183,0.18);
     display: flex;
     align-items: center;
-    padding: 0 2.5rem;
     justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.bz-nav-menu-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bz-nav-menu-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--on-surface);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.bz-nav-menu-btn::before {
+    content: "";
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 6px 0 currentColor, 0 -6px 0 currentColor;
+    border-radius: 1px;
+}
+
+.bz-nav-scrim {
+    display: none;
+}
+
+.bz-nav-menu-input:focus-visible ~ .bz-nav-menu-btn {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .bz-brand {
@@ -78,7 +143,11 @@ body {
 }
 .bz-brand span { color: var(--primary); }
 
-.bz-nav-links { display: flex; gap: 2.5rem; }
+.bz-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
 
 .bz-nav-links a {
     font-family: 'Manrope', sans-serif;
@@ -313,6 +382,7 @@ body {
     justify-content: space-between;
     align-items: flex-end;
     gap: 1rem;
+    position: relative;
 }
 .bz-name {
     font-family: 'Manrope', sans-serif;
@@ -494,8 +564,12 @@ body {
     .bz-about-inner { grid-template-columns: 1fr; gap: 3rem; }
 }
 @media (max-width: 768px) {
-    body { padding-top: 64px; }
-    .bz-nav { height: 64px; padding: 0 1.25rem; }
+    body { padding-top: calc(64px + env(safe-area-inset-top, 0px)); }
+    .bz-nav {
+        min-height: calc(64px + env(safe-area-inset-top, 0px));
+        padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+        padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+    }
     .bz-hero { padding: 64px 1.25rem 80px; }
     .bz-slide { min-width: 88%; }
     .bz-track { padding: 2rem 6%; gap: 1.25rem; }
@@ -505,9 +579,80 @@ body {
     .bz-name { font-size: 1.5rem; }
     .bz-about { padding: 64px 1.25rem; }
 }
+
+@media (max-width: 640px) {
+    .bz-nav-menu-btn { display: flex; }
+
+    .bz-nav-links {
+        display: none;
+        position: fixed;
+        top: calc(64px + env(safe-area-inset-top, 0px));
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0.25rem 0 0.75rem;
+        background: rgba(248,249,250,0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(171,179,183,0.2);
+        box-shadow: 0 12px 32px rgba(43,52,55,0.08);
+        z-index: 101;
+    }
+
+    .bz-nav-links a {
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid rgba(171,179,183,0.12);
+    }
+
+    .bz-nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    .bz-nav-menu-input:checked ~ .bz-nav-links {
+        display: flex;
+    }
+
+    .bz-nav-menu-input:checked ~ .bz-nav-scrim {
+        display: block;
+        position: fixed;
+        inset: 0;
+        top: calc(64px + env(safe-area-inset-top, 0px));
+        background: rgba(15, 23, 42, 0.35);
+        z-index: 100;
+        cursor: pointer;
+    }
+}
+
 @media (max-width: 480px) {
     .bz-slide { min-width: 92%; }
     .bz-co-grid { grid-template-columns: 1fr; }
+    .bz-info {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-right: 2.75rem;
+    }
+    .bz-arrow-icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+        opacity: 0.85;
+        transform: none;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .bz-arrow-icon {
+        opacity: 0.9;
+        transform: none;
+    }
+    .bz-slide-link:hover .bz-frame {
+        transform: none;
+    }
+    .bz-slide-link:active .bz-frame {
+        transform: translateY(-4px);
+    }
 }
 </style>
 </head>
@@ -515,11 +660,14 @@ body {
 
 <!-- NAVBAR -->
 <nav class="bz-nav">
+    <input type="checkbox" id="bz-nav-menu" class="bz-nav-menu-input" autocomplete="off">
     <a class="bz-brand" href="index.php">Bazaar<span>.</span></a>
+    <label for="bz-nav-menu" class="bz-nav-menu-btn"><span class="visually-hidden">Menu</span></label>
     <div class="bz-nav-links">
         <a href="index.php" class="active">Companies</a>
         <a href="dashboard.php">Dashboard</a>
     </div>
+    <label for="bz-nav-menu" class="bz-nav-scrim" aria-hidden="true"></label>
 </nav>
 
 <!-- HERO -->
@@ -670,6 +818,14 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+(function () {
+    const navToggle = document.getElementById('bz-nav-menu');
+    if (navToggle) {
+        document.querySelectorAll('.bz-nav-links a').forEach(function (a) {
+            a.addEventListener('click', function () { navToggle.checked = false; });
+        });
+    }
+}());
 (function () {
     const track  = document.getElementById('sliderTrack');
     const slides = Array.from(document.querySelectorAll('.bz-slide'));
