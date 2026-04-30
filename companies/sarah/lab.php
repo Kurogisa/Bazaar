@@ -18,6 +18,7 @@
 
       <div class="list-group">
         <a class="list-group-item list-group-item-action" href="lab/secure_vault/index.php">Lab — Secure encrypted vault (auth +4GB-capable encryption)</a>
+        <a class="list-group-item list-group-item-action" href="lab/stock_predictor/index.php">Lab — Stock market prediction engine (SQLite + ingestion + API + charts)</a>
         <a class="list-group-item list-group-item-action" href="lab/lab04_human.php">Lab 04 - Human</a>
         <a class="list-group-item list-group-item-action" href="lab/lab04_ai.php">Lab 04 - AI</a>
       </div>
