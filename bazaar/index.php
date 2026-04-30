@@ -666,6 +666,11 @@ body {
     <div class="bz-nav-links">
         <a href="index.php" class="active">Companies</a>
         <a href="dashboard.php">Dashboard</a>
+        <a href="../companies/sarah/about.php">About</a>
+        <a href="../companies/sarah/product.php">Product</a>
+        <a href="../companies/sarah/news.php">News</a>
+        <a href="../companies/sarah/lab.php">Lab</a>
+        <a href="../companies/sarah/contact.php">Contact</a>
     </div>
     <label for="bz-nav-menu" class="bz-nav-scrim" aria-hidden="true"></label>
 </nav>

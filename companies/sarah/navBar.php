@@ -35,6 +35,9 @@ $basePath = isset($basePath) ? (string)$basePath : "";
           <a class="nav-link <?php echo ($currentPage === "lab") ? "active" : ""; ?>" href="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>lab.php">Lab</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?php echo ($currentPage === "users") ? "active" : ""; ?>" href="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>users.php">Users</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <?php echo ($currentPage === "contact") ? "active" : ""; ?>" href="<?php echo htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>contact.php">Contact</a>
         </li>
         <li class="nav-item">
