@@ -19,25 +19,47 @@ foreach (glob($companiesDir . '/*/company.php') as $file) {
 
 // ---- cURL fetch helper ----
 function fetchUsers(string $url): array {
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_USERAGENT      => 'Bazaar-Dashboard/1.0',
-        CURLOPT_HTTPHEADER     => ['Accept: application/json'],
-    ]);
-    $response = curl_exec($ch);
-    $error    = curl_error($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT      => 'Bazaar-Dashboard/1.0',
+            CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+        ]);
+        $response = curl_exec($ch);
+        $error    = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-    if ($error)            return ['error' => "cURL: $error",         'users' => []];
-    if ($httpCode !== 200) return ['error' => "HTTP $httpCode",        'users' => []];
+        if ($error)            return ['error' => "cURL: $error",         'users' => []];
+        if ($httpCode !== 200) return ['error' => "HTTP $httpCode",        'users' => []];
+    } else {
+        $context = stream_context_create([
+            'http' => [
+                'method'  => 'GET',
+                'timeout' => 10,
+                'header'  => "Accept: application/json\r\nUser-Agent: Bazaar-Dashboard/1.0\r\n",
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $context);
+
+        if ($response === false && str_starts_with($url, 'https://')) {
+            $response = @file_get_contents('http://' . substr($url, 8), false, $context);
+        }
+
+        if ($response === false) {
+            return ['error' => 'Unable to fetch API response', 'users' => []];
+        }
+    }
+
     $data = json_decode($response, true);
-    if (!$data)            return ['error' => 'Invalid JSON response', 'users' => []];
+    if (!is_array($data))  return ['error' => 'Invalid JSON response', 'users' => []];
 
-    return ['error' => null, 'users' => $data['users'] ?? []];
+    $users = $data['users'] ?? $data;
+
+    return ['error' => null, 'users' => is_array($users) ? $users : []];
 }
 
 // ---- Fetch all ----
